@@ -14,6 +14,10 @@ class CheckList extends Component {
     return (
       <div className="checklist">
         <ul>{tasks}</ul>
+        <input type="text"
+          className="checklist--add-task"
+          value="works"
+          placeholder="type then hit enter to add a task" />
       </div>
     )
 
