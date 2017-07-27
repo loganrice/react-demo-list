@@ -4,7 +4,7 @@ class CheckList extends Component {
 
   render() {
     let tasks = this.props.tasks.map((task) => (
-        <li className="checklist__task">
+        <li key={task.id} className="checklist__task">
           <input type="checkbox" defaultChecked={task.done} />
           {task.name}
           <a href="#" className="checklist__task--remove" />
@@ -16,7 +16,6 @@ class CheckList extends Component {
         <ul>{tasks}</ul>
         <input type="text"
           className="checklist--add-task"
-          value="works"
           placeholder="type then hit enter to add a task" />
       </div>
     )

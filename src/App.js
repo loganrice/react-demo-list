@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import KanbanBoard from './KanbanBoard';
+import KanbanBoardContainer from './KanbanBoardContainer';
 
 let cardsList = [
   {
@@ -47,7 +47,7 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h2>Welcome to React!</h2>
         </div>
-        <KanbanBoard cards={cardsList}/>
+        <KanbanBoardContainer cards={cardsList}/>
       </div>
     );
   }
