@@ -17,7 +17,7 @@ class KanbanBoard extends Component {
           cardCallbacks={this.props.cardCallbacks} 
           cards= {this.props.cards.filter((card) => card.status === "in-progress")} />
 
-        <List id='done' title='In Progress' 
+        <List id='done' title='Done' 
           taskCallbacks={this.props.taskCallbacks} 
           cardCallbacks={this.props.cardCallbacks} 
           cards= {this.props.cards.filter((card) => card.status === "done")} />
