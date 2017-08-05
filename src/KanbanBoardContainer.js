@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import KanbanBoard from './KanbanBoard';
 import 'whatwg-fetch';
-import 'babel-polyfill';
+// import 'babel-polyfill';
 import update from 'react-addons-update';
 
 const API_URL = 'http://kanbanapi.pro-react.com';
@@ -30,6 +30,41 @@ class KanbanBoardContainer extends Component {
     })
 
     window.state = this.state;
+  }
+
+  updateCardStatus(cardId, listId) {
+    let cardIndex = this.state.cards.findIndex((card) => card.id === cardId);
+
+    let card = this.state.cards[cardIndex]
+
+    if(card.status != listId) {
+      this.setState(update(this.state, {
+        cards: {
+          [cardIndex]: {
+            status: { $set: listId }
+          }
+        }
+      }));
+    }
+  }
+
+  updateCardPosition(cardId, afterId) {
+    if(cardId !== afterId) {
+      let cardIndex = this.state.cards.findIndex((card) => card.id === cardId);
+
+      let card = this.state.cards[cardIndex]
+
+      let afterIndex = this.state.cards.findIndex((card) => card.id === afterId);
+
+      this.setState(update(this.state, {
+        cards: {
+          $splice: [
+            [cardIndex, 1],
+            [afterIndex, 0, card]
+          ]
+        }
+      }));
+    }
   }
 
   addTask(cardId, taskName) {
@@ -101,6 +136,38 @@ class KanbanBoardContainer extends Component {
   }
 
   toggleTask(cardId, taskId, taskIndex) {
+    let prevState = this.state;
+
+    let cardIndex = this.state.cards.findIndex((card) => card.id == cardId);
+
+    let newDoneValue;
+
+    let nextState = update(
+                      this.state.cards, {
+                        [cardIndex]: {
+                          done: { $apply: (done) => {
+                            newDoneValue = !done
+                            return newDoneValue;
+                          }}
+                        }
+                      });
+
+   this.setState({cards: nextState});
+   
+   fetch(`${API_URL}/cards/${cardId}/tasks/${taskId}`, {
+          method: 'put',
+          headers: API_HEADERS,
+          body: JSON.stringify({done: newDoneValue})
+   })
+   .then((response) => {
+     if(!response.ok) {
+       throw new Error("Server response wasn't OK")
+     } 
+   })
+   .catch((error) => {
+     console.error("Fetch error:", error)
+     this.setState(prevState);
+   });
 
   }
 
@@ -110,7 +177,11 @@ class KanbanBoardContainer extends Component {
                    taskCallbacks={{
                      toggle: this.toggleTask.bind(this),
                      delete: this.deleteTask.bind(this),
-                     add: this.addTask.bind(this)}} />
+                     add: this.addTask.bind(this)}}
+                   cardCallbacks={{
+                     updateStatus: this.updateCardStatus.bind(this),
+                     updatePosition: this.updateCardPosition.bind(this) 
+                   }} />
     )
   }
 }
